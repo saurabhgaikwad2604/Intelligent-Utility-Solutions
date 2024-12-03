@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>My Bookings</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #E9F1FA;
+            /* Light blue background */
+        }
+
+        .navbar {
+            background-color: #00ABE4;
+            /* Bright blue for navbar */
+        }
+
+        .navbar-brand,
+        .navbar-nav .nav-link {
+            color: #FFFFFF !important;
+        }
+
+        .table th,
+        .table td {
+            background-color: #FFFFFF;
+            /* White for table cells */
+        }
+
+        .table thead th {
+            background-color: #00ABE4;
+            /* Bright blue for the header */
+            color: white;
+            /* White text for header */
+        }
+
+        .btn-primary {
+            background-color: #00ABE4;
+            /* Bright blue for buttons */
+            border-color: #00ABE4;
+            /* Same bright blue for button border */
+        }
+
+        .btn-primary:hover {
+            background-color: #007C9C;
+            /* Darker shade on hover */
+        }
+
+        footer {
+            background-color: #00ABE4;
+            color: white;
+            padding: 5px;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="/user/dashboard" style="font-weight: bold;">Intelligent Utility Solutions</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item"><a class="nav-link" href="/user/dashboard">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/user/profile">Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5 mb-5">
+        <h1 class="text-center mb-4">My Bookings</h1>
+
+        <!-- Display message if there are no bookings -->
+        <div th:if="${bookings.isEmpty()}" class="alert alert-warning text-center">
+            <p>You have no bookings yet.</p>
+        </div>
+
+        <!-- Display bookings table if there are any -->
+        <div th:if="${!bookings.isEmpty()}">
+            <table class="table table-hover">
+                <thead class="thead">
+                    <tr>
+                        <th scope="col">Service</th>
+                        <th scope="col">Service Provider</th> <!-- New column -->
+                        <th scope="col">Date</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Price</th> <!-- New column for price -->
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="booking : ${bookings}">
+                        <td th:text="${booking.serviceName}"></td>
+                        <td th:text="${booking.provider.name}"></td> <!-- Adjust to access the provider name -->
+                        <td th:text="${booking.bookingDate}"></td> <!-- Use formatted date -->
+                        <td th:text="${booking.status}" class="text-capitalize"></td>
+                        <td th:text="${booking.totalPrice}"></td> <!-- Adjust to display total price -->
+                        <td>
+                            <div th:if="${booking.status == 'Payment Generated'}">
+                                <a class="btn btn-primary" th:href="@{/user/makePayment/{bookingId}(bookingId=${booking.id})}">Make Payment</a>
+                            </div>
+                            <div th:if="${booking.status == 'Completed'}">
+                                <a class="btn btn-secondary" th:href="@{/user/viewReceipt/{bookingId}(bookingId=${booking.id})}">View Receipt</a>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="/user/dashboard" class="btn btn-primary">Back to Home</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Intelligent Utility Solutions. All rights reserved.</p>
+    </footer>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Provider Dashboard</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #E9F1FA;
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar {
+            background-color: #00ABE4;
+        }
+
+        .navbar-brand,
+        .navbar-nav .nav-link {
+            color: #FFFFFF !important;
+        }
+
+        .dashboard-container {
+            margin-top: 2rem;
+        }
+
+        .welcome-message {
+            color: #00ABE4;
+            font-size: 1.5rem;
+            margin-top: 1rem;
+            text-align: center;
+            font-weight: Bold;
+        }
+
+        .review-section {
+            text-align: center;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        .card {
+            background-color: #FFFFFF;
+            border: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .graph-section {
+            height: 350px;
+            position: relative;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #earningsChart {
+            padding: 10px;
+            height: 100%;
+            width: 90%;
+        }
+
+        .week-nav-buttons {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .week-nav-buttons button {
+            background-color: #00ABE4;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+        }
+
+        .week-nav-buttons button:hover {
+            background-color: #007BB5;
+        }
+
+        .scrollable-section {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        footer {
+            background-color: #00ABE4;
+            color: white;
+            padding: 5px;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .section-header {
+            font-size: 1.25rem;
+            color: #00ABE4;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .section-header:hover {
+            color: #00ABE4;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="/provider/dashboard" style="font-weight: bold;">Intelligent Utility
+                Solutions</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item"><a class="nav-link" href="/provider/profile">Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/provider/service-requests">Service Requests
+                            <span id="requestCountBadge" class="badge badge-danger "
+                                th:text="${serviceRequestCount}"></span>
+                        </a></li>
+                    <li class="nav-item"><a class="nav-link" href="/provider/service-history">Service History</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/provider/services-provided">Services Provided</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="/provider/my-reviews">My Reviews</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Welcome Message -->
+    <div class="container dashboard-container">
+        <div class="mb-4">
+            <h3 class="welcome-message">Welcome, <span th:text="${providerName}">Provider Name</span>!</h3>
+            <p class="review-section mb-0"><strong>Rating:</strong> <span th:text="${averageRating}">Average
+                    Rating</span></p>
+            <p class="review-section"><strong>Latest Review:</strong> "<span th:text="${latestReview}">Latest review
+                    text</span>" - <span th:text="${reviewedBy}">Customer Name</span></p>
+        </div>
+
+        <!-- Graph and Service Request Sections -->
+        <div class="row mt-4">
+            <!-- Earnings Graph -->
+            <div class="col-md-8">
+                <div class="card graph-section">
+                    <h4 class="section-header">Weekly Earnings</h4>
+                    <canvas id="weeklyPaymentsChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+
+            <!-- Service Requests and Recent Services Provided Section -->
+            <div class="col-md-4">
+                <div class="card">
+                    <a class="section-header" href="/provider/service-requests">Service Requests
+                        <span id="requestCountBadge" class="badge badge-danger "
+                            th:text="${serviceRequestCount}"></span>
+                    </a>
+                    <div class="scrollable-section">
+                        <div id="serviceRequests">
+                            <div th:if="${pendingBookings != null && !pendingBookings.empty}">
+                                <div th:each="booking : ${pendingBookings}">
+                                    <p><strong>Customer:</strong> <span th:text="${booking.user.name}">Customer
+                                            Name</span></p>
+                                    <p><strong>Contact No.:</strong> <span th:text="${booking.user.contactno}">Contact
+                                            No.
+                                        </span>
+                                    </p>
+                                    <p><strong>Address:</strong> <span th:text="${booking.address}">Customer
+                                            Address</span></p>
+                                    <p><strong>Date:</strong> <span th:text="${booking.bookingDate}">Booking Date</span>
+                                    </p>
+                                    <p><strong>Time:</strong> <span th:text="${booking.timeSlot}">Booking Date</span>
+                                    </p>
+
+                                    <form th:action="@{/provider/updateBookingStatus}" method="post">
+                                        <input type="hidden" name="bookingId" th:value="${booking.id}" />
+                                        <button type="submit" name="action" value="confirm"
+                                            class="btn btn-success btn-sm">Confirm</button>
+                                        <button type="submit" name="action" value="reject"
+                                            class="btn btn-danger btn-sm">Reject</button>
+                                    </form>
+                                    <hr>
+                                </div>
+                            </div>
+                            <p th:if="${pendingBookings == null || pendingBookings.empty}">No pending service requests.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <a class="section-header" href="/provider/services-provided">Recent Service Provided</a>
+                    <div class="scrollable-section">
+                        <div id="serviceRequests">
+                            <div th:if="${completedBookings != null && !completedBookings.empty}">
+                                <div th:each="booking : ${completedBookings}">
+                                    <p><strong>Customer:</strong> <span th:text="${booking.user.name}">Customer
+                                            Name</span></p>
+                                    <p><strong>Contact No.:</strong> <span th:text="${booking.user.contactno}">Contact
+                                            No.
+                                        </span>
+                                    </p>
+                                    <p><strong>Address:</strong> <span th:text="${booking.address}">Customer
+                                            Address</span></p>
+                                    <p><strong>Date:</strong> <span th:text="${booking.bookingDate}">Booking Date</span>
+                                    </p>
+                                    <p><strong>Time:</strong> <span th:text="${booking.timeSlot}">Booking Date</span>
+                                    </p>
+                                    <hr>
+                                </div>
+                            </div>
+                            <p th:if="${completedBookings == null || completedBookings.empty}">Completed service is not
+                                available.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Intelligent Utility Solutions. All rights reserved.</p>
+    </footer>
+
+    <!-- jQuery, Popper.js, and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Chart.js for Earnings Graph -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script th:inline="javascript">
+        const labels = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
+        const data = JSON.parse(/*[[${weeklyPaymentsJson}]]*/);
+        const values = labels.map(day => data[day] || 0);
+
+
+
+        new Chart(document.getElementById('weeklyPaymentsChart'), {
+
+            type: 'line',
+
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Weekly Payments',
+                    data: values,
+                    borderColor: '#00ABE4',
+                    borderWidth: 2,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Amount (Rupee)'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Registration</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #E9F1FA;
+            /* Light background color */
+        }
+
+        .navbar {
+            background-color: #00ABE4;
+            /* Navbar background color */
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            /* Make the title bold */
+            color: #FFFFFF !important;
+            /* White text for navbar brand */
+        }
+
+        .navbar-nav .nav-link {
+            color: #FFFFFF !important;
+            /* White text for navbar links */
+        }
+
+        .card {
+            border: none;
+            /* Remove border for card */
+            background-color: #FFFFFF;
+            /* Card background color */
+        }
+
+        .card-title{
+            background-color: #00ABE4;
+            color: #FFFFFF !important;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        .card-body {
+            background-color: #FFFFFF;
+            /* Card body background color */
+        }
+
+        .btn-primary {
+            background-color: #00ABE4;
+            /* Primary button color */
+            border-color: #00ABE4;
+            /* Button border color */
+        }
+
+        .btn-primary:hover {
+            background-color: #007BB5;
+            /* Button hover color */
+            border-color: #007BB5;
+            /* Button border hover color */
+        }
+
+        .alert {
+            margin-bottom: 20px;
+            /* Spacing for alerts */
+        }
+
+        footer {
+            background-color: #00ABE4;
+            color: white;
+            padding: 5px;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="/">Intelligent Utility Solutions</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/registration/provider">Register as Service Provider</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container d-flex justify-content-center align-items-center mt-4 mb-5">
+        <div class="card shadow-lg w-100" style="max-width: 500px;">
+            <div class="card-body p-4">
+                <h2 class="card-title text-center mb-4">User Registration</h2>
+
+                <!-- Show the message if it's present -->
+                <div th:if="${message != null}" class="alert alert-success" role="alert">
+                    <p th:text="${message}"></p>
+                </div>
+
+                <form th:action="@{/register/user}" th:object="${user}" method="POST">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Enter your name"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" class="form-control" id="password" name="password"
+                            placeholder="Enter your password" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location">Location</label>
+                        <input type="text" class="form-control" id="location" name="location"
+                            placeholder="Enter your location" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contactno">Contact Number</label>
+                        <input type="text" class="form-control" id="contactno" name="contactno"
+                            placeholder="Enter your contact number" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="favoriteColor">Favorite Color</label>
+                        <input type="text" class="form-control" id="favoriteColor" name="favoriteColor"
+                            placeholder="Enter your favorite color" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="favoriteFruit">Favorite Fruit</label>
+                        <input type="text" class="form-control" id="favoriteFruit" name="favoriteFruit"
+                            placeholder="Enter your favorite fruit" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="favoriteAnimal">Favorite Animal</label>
+                        <input type="text" class="form-control" id="favoriteAnimal" name="favoriteAnimal"
+                            placeholder="Enter your favorite animal" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block mt-4">Register</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center">
+        <p>&copy; 2024 Intelligent Utility Solutions. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const alert = document.querySelector(".alert");
+            if (alert) {
+                setTimeout(() => {
+                    alert.style.display = 'none';
+                }, 5000); // Hide message after 5 seconds
+            }
+        });
+    </script>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

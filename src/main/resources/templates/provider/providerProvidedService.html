@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Services Provided</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #E9F1FA;
+        }
+
+        .navbar {
+            background-color: #00ABE4;
+        }
+
+        .navbar-brand,
+        .navbar-nav .nav-link {
+            color: #FFFFFF !important;
+        }
+
+        .table th,
+        .table td {
+            background-color: #FFFFFF;
+        }
+
+        .table thead th {
+            background-color: #00ABE4;
+            color: white;
+        }
+
+        .btn-primary {
+            background-color: #00ABE4;
+            border-color: #00ABE4;
+        }
+
+        .btn-primary:hover {
+            background-color: #007C9C;
+        }
+
+        /* Pop-up styling */
+        .modal-content {
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .modal-header {
+            background-color: #00ABE4;
+            color: white;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+        }
+
+        .form-control {
+            border-radius: 5px;
+            border-color: #00ABE4;
+        }
+
+        .btn-generate {
+            background-color: #00ABE4;
+            border: none;
+            color: white;
+            font-weight: bold;
+            width: 100%;
+            border-radius: 5px;
+        }
+
+        footer {
+            background-color: #00ABE4;
+            color: white;
+            padding: 5px;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="/provider/dashboard" style="font-weight: bold;">Intelligent Utility
+                Solutions</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item"><a class="nav-link" href="/provider/dashboard">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/provider/profile">Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/provider/service-requests">Service Requests
+                            <span id="requestCountBadge" class="badge badge-danger"
+                                th:text="${serviceRequestCount}"></span>
+                        </a></li>
+                        <li class="nav-item"><a class="nav-link" href="/provider/service-history">Service History</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/provider/my-reviews">My Reviews</a>
+                        </li>
+                    <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5 mb-5">
+        <h1 class="text-center mb-4">Services Provided</h1>
+
+        <div th:if="${completedBookings.isEmpty()}" class="alert alert-warning text-center">
+            <p>Not provided any services yet.</p>
+        </div>
+
+        <!-- Display bookings table if there are any -->
+        <div th:if="${!completedBookings.isEmpty()}">
+            <table class="table table-hover">
+                <thead class="thead">
+                    <tr>
+                        <th scope="col">Customer Name</th>
+                        <th scope="col">Contact No.</th>
+                        <th scope="col">Address</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Service</th>
+                        <th scope="col">Amount</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="booking : ${completedBookings}">
+                        <td th:text="${booking.user.name}"></td>
+                        <td th:text="${booking.user.contactno}"></td>
+                        <td th:text="${booking.address}"></td>
+                        <td th:text="${booking.bookingDate}"></td>
+                        <td th:text="${booking.status}" class="text-capitalize"></td>
+                        <td th:text="${booking.serviceName}"></td>
+                        <td th:text="${booking.payment.amount}"></td>
+                        <td>
+                            <a th:if="${booking.paymentStatus == 'Completed'}" class="btn btn-secondary ml-2"
+                                th:href="@{/provider/viewReceipt/{bookingId}(bookingId=${booking.id})}">
+                                View Receipt
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="/provider/dashboard" class="btn btn-primary">Back to Home</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Intelligent Utility Solutions. All rights reserved.</p>
+    </footer>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

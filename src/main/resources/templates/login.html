@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        html,
+        body {
+            height: 100%;
+            /* Make sure the body takes full height */
+            margin: 0;
+            /* Remove default margin */
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            /* Stack children vertically */
+            background-color: #E9F1FA;
+            /* Light background color */
+        }
+
+        .navbar {
+            background-color: #00ABE4;
+            /* Navbar background color */
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            /* Make the title bold */
+            color: #FFFFFF !important;
+            /* White text for navbar brand */
+        }
+
+        .navbar-nav .nav-link {
+            color: #FFFFFF !important;
+            /* White text for navbar links */
+        }
+
+        .card {
+            border: none;
+            /* Remove border for card */
+            background-color: #FFFFFF;
+            /* White card background */
+        }
+
+        .card-header {
+            background-color: #00ABE4;
+            /* Header background color */
+            color: #FFFFFF;
+            /* White text for header */
+        }
+
+        .btn-primary {
+            background-color: #00ABE4;
+            /* Primary button color */
+            border-color: #00ABE4;
+            /* Button border color */
+        }
+
+        .btn-primary:hover {
+            background-color: #007BB5;
+            /* Button hover color - a darker shade of blue */
+            border-color: #007BB5;
+            /* Button border hover color */
+        }
+
+        .alert {
+            margin-bottom: 20px;
+            /* Spacing for alerts */
+        }
+
+        .content {
+            flex: 1;
+            /* Allow content to grow and take up space */
+        }
+
+        footer {
+            background-color: #00ABE4;
+            color: white;
+            padding: 5px;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="/">Intelligent Utility Solutions</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/registration/user">Register as User</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/registration/provider">Register as Service Provider</a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="/contactUs">Contact Us</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5 content">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <!-- Success message -->
+                <div th:if="${successMessage != null}" class="alert alert-success">
+                    <p th:text="${successMessage}"></p>
+                </div>
+                <!-- Failed message -->
+                <div th:if="${failedMessage != null}" class="alert alert-danger">
+                    <p th:text="${failedMessage}"></p>
+                </div>
+                <div class="card">
+                    <div class="card-header text-center">
+                        <h3>Login</h3>
+                    </div>
+                    <div class="card-body">
+                        <!-- Login Form -->
+                        <form action="/login" method="post">
+                            <div class="form-group">
+                                <label for="username">Email</label>
+                                <input type="text" class="form-control" id="username" name="username"
+                                    placeholder="Enter your email" autocomplete="off" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input type="password" class="form-control" id="password" name="password"
+                                    placeholder="Enter your password" required>
+                            </div>
+
+                            <!-- Error message handling -->
+                            <div class="form-group">
+                                <sec:authorize access="isAnonymous()">
+                                    <div class="alert alert-danger" th:if="${param.error}">
+                                        <p>Invalid username or password. Please try again.</p>
+                                    </div>
+                                    <div class="alert alert-danger" th:if="${param.userError}">
+                                        <p>You are currently deactivated by Admin. Please contact the admin.</p>
+                                    </div>
+                                </sec:authorize>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-block">Login</button>
+                        </form>
+
+                        <div class="text-center mt-3">
+                            <p class="text-primary mt-3">
+                                <a href="#" data-toggle="modal" data-target="#forgotPasswordModal">Forgot Password?</a>
+                            </p>
+                            <p class="text-primary">Don't have an account?</p>
+                            <a href="/registration/user">Sign up as User.</a> <br>
+                            <a href="/registration/provider">Sign up as Service Provider.</a>
+                        </div>
+
+                        <!-- Forgot Password Modal -->
+                        <div class="modal fade" id="forgotPasswordModal" tabindex="-1" role="dialog"
+                            aria-labelledby="forgotPasswordLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="forgotPasswordLabel">Forgot Password</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="forgotPasswordForm">
+                                            <div class="form-group">
+                                                <label for="email">Email</label>
+                                                <input type="email" class="form-control" id="email" name="email"
+                                                    autocomplete="off" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="role">Role:</label>
+                                                <input type="text" class="form-control" id="role" name="role"
+                                                    placeholder="User / Provider" autocomplete="off" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="favoriteColor">Favorite Color</label>
+                                                <input type="text" class="form-control" id="favoriteColor"
+                                                    autocomplete="off" name="favoriteColor" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="favoriteAnimal">Favorite Animal</label>
+                                                <input type="text" class="form-control" id="favoriteAnimal"
+                                                    autocomplete="off" name="favoriteAnimal" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="favoriteFruit">Favorite Fruit</label>
+                                                <input type="text" class="form-control" id="favoriteFruit"
+                                                    autocomplete="off" name="favoriteFruit" required>
+                                            </div>
+                                            <button type="button" class="btn btn-primary"
+                                                onclick="submitForgotPassword()">Submit</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center">
+        <p>&copy; 2024 Intelligent Utility Solutions. All rights reserved.</p>
+    </footer>
+
+    <!-- Clear the session attribute after displaying the message -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const alert = document.querySelector(".alert-success");
+            if (alert) {
+                setTimeout(() => {
+                    alert.style.display = 'none';
+                }, 5000); // Hide message after 5 seconds
+            }
+        });
+        document.addEventListener("DOMContentLoaded", function () {
+            const alert = document.querySelector(".alert-danger");
+            if (alert) {
+                setTimeout(() => {
+                    alert.style.display = 'none';
+                }, 5000); // Hide message after 5 seconds
+            }
+        });
+    </script>
+    <script>
+        function submitForgotPassword() {
+            const formData = new FormData(document.getElementById("forgotPasswordForm"));
+
+            fetch("/verifySecurityAnswers", {
+                method: "POST",
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = "/reset-password?userId=" + data.userId;
+                    } else {
+                        alert("Verification failed. Please check your answers.");
+                    }
+                })
+                .catch(error => console.error("Error:", error));
+        }
+    </script>
+
+    <!-- Bootstrap JS and dependencies (Popper.js and jQuery) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

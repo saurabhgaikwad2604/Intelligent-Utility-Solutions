@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Users</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #E9F1FA;
+            /* Light blue background */
+        }
+
+        .navbar {
+            background-color: #00ABE4;
+            /* Bright blue for navbar */
+        }
+
+        .navbar-brand,
+        .navbar-nav .nav-link {
+            color: #FFFFFF !important;
+        }
+
+        .table th,
+        .table td {
+            background-color: #FFFFFF;
+            /* White for table cells */
+        }
+
+        .table thead th {
+            background-color: #00ABE4;
+            /* Bright blue for the header */
+            color: white;
+            /* White text for header */
+        }
+
+        .btn-primary {
+            background-color: #00ABE4;
+            /* Bright blue for buttons */
+            border-color: #00ABE4;
+            /* Same bright blue for button border */
+        }
+
+        .btn-primary:hover {
+            background-color: #007C9C;
+            /* Darker shade on hover */
+        }
+
+        .container {
+            margin-top: 20px;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: #E9F1FA;
+        }
+
+        .card-header {
+            background-color: #00ABE4;
+            color: #FFFFFF;
+        }
+
+        footer {
+            background-color: #00ABE4;
+            color: white;
+            padding: 5px;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="/admin/dashboard" style="font-weight: bold;">Intelligent Utility Solutions</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/admin/dashboard">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/admin/service-provider">Service Providers</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/admin/bookings">Bookings</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/admin/reports">Reports</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5 mb-5">
+        <h1 class="text-center mb-4" style="color: #00ABE4;">Manage Users</h1>
+
+        <!-- Display message if there are no users -->
+        <div th:if="${users.isEmpty()}" class="alert alert-warning text-center">
+            <p>No User registered yet.</p>
+        </div>
+
+        <!-- Display users table if there are any -->
+        <div th:if="${!users.isEmpty()}">
+            <table class="table table-hover">
+                <thead class="thead">
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Contact No.</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="user : ${users}">
+                        <td th:text="${user.id}"></td>
+                        <td th:text="${user.name}"></td>
+                        <td th:text="${user.contactno}"></td>
+                        <td th:text="${user.email}"></td>
+                        <td th:text="${user.status}"></td>
+                        <td>
+                            <a class="btn btn-primary btn-sm"
+                                th:href="@{/admin/users/view-details/{userId}(userId=${user.id})}">View</a>
+                            <a th:onclick="'toggleUserStatus(' + ${user.id} + ')'"
+                                th:text="${user.status == 'Active' ? 'Deactivate' : 'Activate'}" class="btn btn-sm"
+                                th:classappend="${user.status == 'Active' ? 'btn-warning' : 'btn-success'}"></a>
+                            <a class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal"
+                                th:data-user-id="${user.id}">Delete</a>
+                        </td>
+
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="/admin/dashboard" class="btn btn-primary mb-5">Back to Home</a>
+        </div>
+    </div>
+
+    <!-- delete modal as it is -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteConfirmModalLabel">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="deleteUserForm" action="#" method="post">
+                        <p class="p-2">Are you sure you want to permanently delete this profile?</p>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger">Delete Permanently</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Intelligent Utility Solutions. All rights reserved.</p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- JavaScript to handle redirection -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+            const deleteUserForm = document.getElementById('deleteUserForm');
+
+            deleteConfirmModal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const userId = button.getAttribute('data-user-id');
+                deleteUserForm.action = `/admin/deleteUser/${userId}`; // Check URL structure here
+            });
+
+            deleteUserForm.addEventListener("submit", function (event) {
+                event.preventDefault();
+                fetch(this.action, {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams(new FormData(this))
+                }).then(response => {
+                    if (response.ok) {
+                        window.location.href = "/admin/users";
+                    } else {
+                        alert("Error deleting the user. Please try again.");
+                    }
+                }).catch(error => console.error('Error:', error));
+            });
+        });
+
+    </script>
+    <script>
+        function toggleUserStatus(userId) {
+            fetch(`/admin/users/toggleStatus/${userId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            }).then(response => {
+                if (response.ok) {
+                    location.reload(); // Refresh the page to update the button and status
+                } else {
+                    alert("Error updating status.");
+                }
+            }).catch(error => console.error('Error:', error));
+        }
+    </script>
+
+
+</body>
+
+</html>
